@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther, keccak256, toUtf8Bytes } from 'ethers';
 import { RPS_ZK_ABI, CONTRACTS } from '../config/contracts';
@@ -9,13 +9,25 @@ const MOVES = {
   3: 'Scissors'
 };
 
+// Generate random secret
+const generateSecret = () => {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+};
+
 function CreateGame() {
-  const { address, chain } = useAccount();
+  const { chain } = useAccount();
   const [opponentAddress, setOpponentAddress] = useState('');
   const [stake, setStake] = useState('0.01');
   const [move, setMove] = useState('1');
   const [secret, setSecret] = useState('');
   const [status, setStatus] = useState('');
+
+  // Generate secret on mount
+  useEffect(() => {
+    setSecret(generateSecret());
+  }, []);
 
   const { writeContract, data: hash, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
@@ -77,22 +89,49 @@ function CreateGame() {
 
       <div className="form-group">
         <label>Your Move</label>
-        <select value={move} onChange={(e) => setMove(e.target.value)}>
-          <option value="1">Rock</option>
-          <option value="2">Paper</option>
-          <option value="3">Scissors</option>
-        </select>
+        <div className="move-buttons">
+          <button
+            type="button"
+            className={`move-btn ${move === '1' ? 'selected' : ''}`}
+            onClick={() => setMove('1')}
+          >
+            Rock
+          </button>
+          <button
+            type="button"
+            className={`move-btn ${move === '2' ? 'selected' : ''}`}
+            onClick={() => setMove('2')}
+          >
+            Paper
+          </button>
+          <button
+            type="button"
+            className={`move-btn ${move === '3' ? 'selected' : ''}`}
+            onClick={() => setMove('3')}
+          >
+            Scissors
+          </button>
+        </div>
       </div>
 
       <div className="form-group">
         <label>Secret (keep this private!)</label>
-        <input
-          type="password"
-          placeholder="Enter a secret phrase"
-          value={secret}
-          onChange={(e) => setSecret(e.target.value)}
-        />
-        <small>You'll need this secret to prove your move later</small>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <input
+            type="text"
+            value={secret}
+            readOnly
+            style={{ flex: 1, fontFamily: 'monospace', fontSize: '12px' }}
+          />
+          <button
+            type="button"
+            onClick={() => setSecret(generateSecret())}
+            style={{ padding: '8px 16px' }}
+          >
+            Regenerate
+          </button>
+        </div>
+        <small>This secret is auto-generated. Save it - you'll need it to prove your move later!</small>
       </div>
 
       <button

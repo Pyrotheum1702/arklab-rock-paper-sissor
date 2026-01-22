@@ -15,3 +15,173 @@
     transform: translateY(0);
   }
 }
+
+/* Move selection buttons */
+.move-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.move-btn {
+  flex: 1;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  border: 1.5px solid #d2d2d7;
+  background: white;
+  color: #1d1d1f;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: -0.01em;
+}
+
+.move-btn:hover:not(.selected) {
+  border-color: #0071e3;
+  background: #f5f5f7;
+  transform: scale(1.02);
+}
+
+.move-btn.selected {
+  border-color: #0071e3;
+  background: #0071e3;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+}
+
+.move-btn:active {
+  transform: scale(0.98);
+}
+
+/* Public Lobby Styles */
+.public-lobby .subtitle {
+  text-align: center;
+  color: #6e6e73;
+  margin-bottom: 32px;
+  font-size: 1.1rem;
+}
+
+.move-selection {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: #f5f5f7;
+  border-radius: 12px;
+}
+
+.move-selection h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #1d1d1f;
+}
+
+.selected-move {
+  text-align: center;
+  margin-top: 12px;
+  color: #0071e3;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.secret-info {
+  margin-bottom: 32px;
+}
+
+.secret-info label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.lobby-games {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.lobby-game-card {
+  padding: 20px;
+  background: white;
+  border: 1.5px solid #d2d2d7;
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lobby-game-card:hover {
+  border-color: #0071e3;
+  box-shadow: 0 4px 16px rgba(0, 113, 227, 0.15);
+  transform: translateY(-2px);
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.game-header .game-id {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1d1d1f;
+}
+
+.stake-badge {
+  padding: 6px 12px;
+  background: #0071e3;
+  color: white;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.game-details {
+  margin-bottom: 16px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 0.95rem;
+}
+
+.detail-row .label {
+  color: #6e6e73;
+  font-weight: 500;
+}
+
+.detail-row .value {
+  color: #1d1d1f;
+  font-family: monospace;
+}
+
+.join-btn {
+  width: 100%;
+  padding: 12px;
+  background: #0071e3;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.join-btn:hover:not(:disabled) {
+  background: #0077ed;
+  box-shadow: 0 4px 12px rgba(0, 113, 227, 0.3);
+}
+
+.join-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.join-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

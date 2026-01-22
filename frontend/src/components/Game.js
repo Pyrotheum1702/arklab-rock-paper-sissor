@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import CreateGame from './CreateGame';
+import PublicLobby from './PublicLobby';
 import JoinGame from './JoinGame';
 import GameList from './GameList';
 import './Game.css';
 
 function Game() {
   const { isConnected } = useAccount();
-  const [activeTab, setActiveTab] = useState('create');
+  const [activeTab, setActiveTab] = useState('lobby');
 
   return (
     <div className="game-container">
@@ -30,6 +31,12 @@ function Game() {
         <div className="game-content">
           <div className="tabs">
             <button
+              className={activeTab === 'lobby' ? 'active' : ''}
+              onClick={() => setActiveTab('lobby')}
+            >
+              Public Lobby
+            </button>
+            <button
               className={activeTab === 'create' ? 'active' : ''}
               onClick={() => setActiveTab('create')}
             >
@@ -39,7 +46,7 @@ function Game() {
               className={activeTab === 'join' ? 'active' : ''}
               onClick={() => setActiveTab('join')}
             >
-              Join Game
+              Join by ID
             </button>
             <button
               className={activeTab === 'games' ? 'active' : ''}
@@ -50,6 +57,7 @@ function Game() {
           </div>
 
           <div className="tab-content">
+            {activeTab === 'lobby' && <PublicLobby />}
             {activeTab === 'create' && <CreateGame />}
             {activeTab === 'join' && <JoinGame />}
             {activeTab === 'games' && <GameList />}
