@@ -1,8 +1,13 @@
-# Rock Paper Scissors - Onchain Game
+# Rock Paper Scissors - Zero-Knowledge Onchain Game
 
-A fully decentralized Rock Paper Scissors game built with Solidity and Hardhat. This project demonstrates key blockchain gaming concepts including commit-reveal schemes, game state management, and fair play enforcement.
+A fully decentralized Rock Paper Scissors game built with **Zero-Knowledge Proofs** on **Base L2**. This project demonstrates advanced blockchain gaming with privacy-preserving cryptography and ultra-low transaction costs.
 
-**New: Deploy to Base for ultra-low costs!** Only $0.01 per game (99.95% cheaper than Ethereum). See [BASE_DEPLOYMENT.md](BASE_DEPLOYMENT.md) for details.
+**Key Highlights:**
+- **Zero-Knowledge Proofs**: Moves stay private forever, never revealed on-chain
+- **Base L2 Deployment**: $0.01 per game (99.95% cheaper than Ethereum)
+- **Two Implementations**: ZK (primary) and Commit-Reveal (fallback)
+
+**Quick Start:** See [ZK_BASE_SETUP.md](ZK_BASE_SETUP.md) for deployment guide.
 
 ## Game Overview
 
