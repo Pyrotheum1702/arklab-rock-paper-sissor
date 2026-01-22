@@ -20,11 +20,11 @@ function Game() {
       {!isConnected ? (
         <div className="connect-prompt">
           <h2>Connect Your Wallet to Play</h2>
-          <p>Play Rock Paper Scissors with Zero-Knowledge proofs on Base L2</p>
+          <p>Play Rock Paper Scissors with Zero-Knowledge proofs on Base Sepolia</p>
           <ul>
-            <li>Moves stay private forever</li>
-            <li>Only $0.01 per game</li>
-            <li>Winner takes all</li>
+            <li>Moves stay private using cryptographic commitments</li>
+            <li>Only 0.0001 ETH per game</li>
+            <li>Winner takes all - 100% of the prize pool</li>
           </ul>
         </div>
       ) : (

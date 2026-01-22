@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { parseEther, keccak256, toUtf8Bytes } from 'ethers';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi';
+import { parseEther, keccak256, toUtf8Bytes, toBigInt } from 'ethers';
 import { RPS_ZK_ABI, CONTRACTS } from '../config/contracts';
+import { saveGameTransaction } from '../utils/gameHistory';
 
 const MOVES = {
   1: 'Rock',
@@ -17,48 +18,102 @@ const generateSecret = () => {
 };
 
 function CreateGame() {
-  const { chain } = useAccount();
+  const { address, chain } = useAccount();
+  const [gameType, setGameType] = useState('public');
   const [opponentAddress, setOpponentAddress] = useState('');
-  const [stake, setStake] = useState('0.01');
+  const [stake, setStake] = useState('0.0001');
   const [move, setMove] = useState('1');
   const [secret, setSecret] = useState('');
   const [status, setStatus] = useState('');
+
+  // Get contract address for current chain
+  const contractAddress = chain?.id === 84532
+    ? CONTRACTS.RockPaperScissorsZK.baseSepolia
+    : CONTRACTS.RockPaperScissorsZK.base;
+
+  // Read game counter to get the game ID that will be created
+  const { data: gameCounter } = useReadContract({
+    address: contractAddress,
+    abi: RPS_ZK_ABI,
+    functionName: 'gameCounter'
+  });
 
   // Generate secret on mount
   useEffect(() => {
     setSecret(generateSecret());
   }, []);
 
-  const { writeContract, data: hash, isPending } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+  const { writeContract, data: hash, isPending, error: writeError } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess, error: confirmError } = useWaitForTransactionReceipt({ hash });
+
+  // Update status based on transaction state and save transaction
+  useEffect(() => {
+    if (isPending) {
+      setStatus('Waiting for wallet confirmation...');
+    } else if (isConfirming) {
+      setStatus('Transaction submitted. Waiting for confirmation...');
+    } else if (isSuccess && hash && gameCounter !== undefined && address) {
+      setStatus('Game created successfully!');
+      // Save transaction to history (the game ID will be current gameCounter value)
+      const gameId = Number(gameCounter);
+      saveGameTransaction(gameId, hash, 'create', address);
+    } else if (writeError) {
+      setStatus(`Transaction failed: ${writeError.message}`);
+    } else if (confirmError) {
+      setStatus(`Confirmation failed: ${confirmError.message}`);
+    }
+  }, [isPending, isConfirming, isSuccess, writeError, confirmError, hash, gameCounter, address]);
 
   const handleCreateGame = async () => {
-    if (!opponentAddress || !stake || !secret) {
+    console.log('Create game clicked');
+
+    if (!stake || !secret) {
       setStatus('Please fill all fields');
       return;
     }
 
+    if (gameType === 'private' && !opponentAddress) {
+      setStatus('Please enter opponent address for private game');
+      return;
+    }
+
     try {
-      // Generate commitment
-      const commitment = keccak256(toUtf8Bytes(`${move}:${secret}`));
+      // Generate commitment (keccak256 returns bytes32, contract expects uint256)
+      const commitmentHash = keccak256(toUtf8Bytes(`${move}:${secret}`));
+      const commitment = toBigInt(commitmentHash); // Convert bytes32 to uint256
+      console.log('Commitment hash:', commitmentHash);
+      console.log('Commitment uint256:', commitment.toString());
 
       // Get contract address for current chain
       const contractAddress = chain?.id === 84532
         ? CONTRACTS.RockPaperScissorsZK.baseSepolia
         : CONTRACTS.RockPaperScissorsZK.base;
 
+      console.log('Contract address:', contractAddress);
+      console.log('Chain ID:', chain?.id);
+
+      // Use zero address for public games
+      const opponent = gameType === 'public'
+        ? '0x0000000000000000000000000000000000000000'
+        : opponentAddress;
+
+      console.log('Opponent:', opponent);
+      console.log('Stake:', stake);
+
       setStatus('Creating game...');
 
-      writeContract({
+      const result = writeContract({
         address: contractAddress,
         abi: RPS_ZK_ABI,
         functionName: 'createGame',
-        args: [opponentAddress, commitment],
+        args: [opponent, commitment],
         value: parseEther(stake)
       });
 
-      setStatus('Save your move and secret - you will need them later!');
+      console.log('Transaction submitted:', result);
+      setStatus('Transaction submitted. Waiting for confirmation...');
     } catch (error) {
+      console.error('Error creating game:', error);
       setStatus(`Error: ${error.message}`);
     }
   };
@@ -68,14 +123,37 @@ function CreateGame() {
       <h2>Create New Game</h2>
 
       <div className="form-group">
-        <label>Opponent Address</label>
-        <input
-          type="text"
-          placeholder="0x..."
-          value={opponentAddress}
-          onChange={(e) => setOpponentAddress(e.target.value)}
-        />
+        <label>Game Type</label>
+        <div className="move-buttons">
+          <button
+            type="button"
+            className={`move-btn ${gameType === 'public' ? 'selected' : ''}`}
+            onClick={() => setGameType('public')}
+          >
+            Public
+          </button>
+          <button
+            type="button"
+            className={`move-btn ${gameType === 'private' ? 'selected' : ''}`}
+            onClick={() => setGameType('private')}
+          >
+            Private
+          </button>
+        </div>
+        <small>{gameType === 'public' ? 'Anyone can join this game' : 'Only specified address can join'}</small>
       </div>
+
+      {gameType === 'private' && (
+        <div className="form-group">
+          <label>Opponent Address</label>
+          <input
+            type="text"
+            placeholder="0x..."
+            value={opponentAddress}
+            onChange={(e) => setOpponentAddress(e.target.value)}
+          />
+        </div>
+      )}
 
       <div className="form-group">
         <label>Stake (ETH)</label>
@@ -136,7 +214,7 @@ function CreateGame() {
 
       <button
         onClick={handleCreateGame}
-        disabled={isPending || isConfirming || !opponentAddress || !secret}
+        disabled={isPending || isConfirming || (gameType === 'private' && !opponentAddress) || !secret}
       >
         {isPending || isConfirming ? 'Creating...' : 'Create Game'}
       </button>

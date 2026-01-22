@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { parseEther, keccak256, toUtf8Bytes } from 'ethers';
+import { parseEther, keccak256, toUtf8Bytes, toBigInt } from 'ethers';
 import { RPS_ZK_ABI, CONTRACTS } from '../config/contracts';
+import { saveGameTransaction } from '../utils/gameHistory';
 
 const MOVES = {
   1: 'Rock',
@@ -17,7 +18,7 @@ const generateSecret = () => {
 };
 
 function JoinGame() {
-  const { chain } = useAccount();
+  const { address, chain } = useAccount();
   const [gameId, setGameId] = useState('');
   const [stake, setStake] = useState('0.01');
   const [move, setMove] = useState('1');
@@ -32,6 +33,13 @@ function JoinGame() {
   const { writeContract, data: hash, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
 
+  // Save join transaction when successful
+  useEffect(() => {
+    if (isSuccess && hash && gameId && address) {
+      saveGameTransaction(Number(gameId), hash, 'join', address);
+    }
+  }, [isSuccess, hash, gameId, address]);
+
   const handleJoinGame = async () => {
     if (!gameId || !secret) {
       setStatus('Please fill all fields');
@@ -39,8 +47,9 @@ function JoinGame() {
     }
 
     try {
-      // Generate commitment
-      const commitment = keccak256(toUtf8Bytes(`${move}:${secret}`));
+      // Generate commitment (keccak256 returns bytes32, contract expects uint256)
+      const commitmentHash = keccak256(toUtf8Bytes(`${move}:${secret}`));
+      const commitment = toBigInt(commitmentHash); // Convert bytes32 to uint256
 
       // Get contract address for current chain
       const contractAddress = chain?.id === 84532

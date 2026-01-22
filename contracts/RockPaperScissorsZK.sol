@@ -96,7 +96,7 @@ contract RockPaperScissorsZK {
 
     /**
      * @dev Create a new game with your commitment
-     * @param _player2 Address of opponent
+     * @param _player2 Address of opponent (use address(0) for public game)
      * @param _commitment1 Poseidon(move, secret) - your move commitment
      *
      * The commitment is computed off-chain as:
@@ -108,7 +108,7 @@ contract RockPaperScissorsZK {
         uint256 _commitment1
     ) external payable returns (uint256) {
         if (msg.value == 0) revert InvalidStake();
-        if (_player2 == address(0) || _player2 == msg.sender) revert Unauthorized();
+        if (_player2 == msg.sender) revert Unauthorized(); // Can't play against yourself
         if (_commitment1 == 0) revert InvalidCommitment();
 
         uint256 gameId = gameCounter++;
@@ -138,10 +138,20 @@ contract RockPaperScissorsZK {
         Game storage game = games[_gameId];
 
         if (game.player1 == address(0)) revert GameNotFound();
-        if (msg.sender != game.player2) revert Unauthorized();
+        if (msg.sender == game.player1) revert Unauthorized(); // Can't play against yourself
+
+        // If player2 was set (private game), must be that player
+        // If player2 is address(0) (public game), anyone can join
+        if (game.player2 != address(0) && msg.sender != game.player2) revert Unauthorized();
+
         if (game.state != GameState.WaitingForPlayer2) revert WrongGameState();
         if (msg.value != game.stake) revert InvalidStake();
         if (_commitment2 == 0) revert InvalidCommitment();
+
+        // Set player2 if it was a public game
+        if (game.player2 == address(0)) {
+            game.player2 = msg.sender;
+        }
 
         game.commitment2 = _commitment2;
         game.state = GameState.WaitingForProof;

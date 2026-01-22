@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { parseEther, keccak256, toUtf8Bytes } from 'ethers';
+import { parseEther, keccak256, toUtf8Bytes, toBigInt } from 'ethers';
 import { RPS_ZK_ABI, CONTRACTS } from '../config/contracts';
+import { saveGameTransaction } from '../utils/gameHistory';
 
 const MOVES = {
   1: 'Rock',
@@ -17,7 +18,7 @@ const generateSecret = () => {
 };
 
 function PublicLobby() {
-  const { chain } = useAccount();
+  const { address, chain } = useAccount();
   const [openGames, setOpenGames] = useState([]);
   const [selectedGame, setSelectedGame] = useState(null);
   const [move, setMove] = useState('1');
@@ -26,6 +27,13 @@ function PublicLobby() {
 
   const { writeContract, data: hash, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+
+  // Save join transaction when successful
+  useEffect(() => {
+    if (isSuccess && hash && selectedGame !== null && address) {
+      saveGameTransaction(selectedGame, hash, 'join', address);
+    }
+  }, [isSuccess, hash, selectedGame, address]);
 
   // Generate secret on mount
   useEffect(() => {
@@ -38,44 +46,84 @@ function PublicLobby() {
     : CONTRACTS.RockPaperScissorsZK.base;
 
   // Read game count
-  const { data: gameCount } = useReadContract({
+  const { data: gameCount, refetch: refetchGameCount } = useReadContract({
     address: contractAddress,
     abi: RPS_ZK_ABI,
-    functionName: 'gameCount',
+    functionName: 'gameCounter',
   });
 
   // Fetch open games
   useEffect(() => {
     const fetchOpenGames = async () => {
-      if (!gameCount) return;
+      if (!gameCount || !contractAddress) return;
 
       const games = [];
       const count = Number(gameCount);
 
       for (let i = 0; i < count; i++) {
         try {
-          // This would need to be replaced with actual contract read
-          // For now, we'll create a placeholder
-          games.push({
-            id: i,
-            creator: '0x...', // Would come from contract
-            stake: '0.01', // Would come from contract
-            isOpen: true, // Would check if player2 has joined
+          // Fetch game details from contract
+          const response = await fetch(`https://sepolia.base.org/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              method: 'eth_call',
+              params: [{
+                to: contractAddress,
+                data: `0xa2f77bcc${i.toString(16).padStart(64, '0')}` // getGame(uint256)
+              }, 'latest'],
+              id: 1
+            })
           });
+
+          const result = await response.json();
+          if (result.result && result.result !== '0x') {
+            // Decode the response (ABI encoding uses 32-byte slots)
+            const data = result.result.slice(2); // Remove 0x
+            // Each slot is 64 hex chars (32 bytes). Addresses are last 40 chars (20 bytes) of slot
+            const player1 = '0x' + data.slice(24, 64);   // Slot 0: bytes 12-31
+            const player2 = '0x' + data.slice(88, 128);  // Slot 1: bytes 12-31
+            const stakeHex = '0x' + data.slice(128, 192); // Slot 2: all 32 bytes
+            const state = parseInt(data.slice(382, 384), 16); // Slot 5: last 2 hex chars (uint8)
+
+            // Only show games waiting for player2 (state 0) with player2 = 0x0
+            const isPublicGame = player2 === '0x0000000000000000000000000000000000000000';
+            const isOpen = state === 0;
+
+            if (isPublicGame && isOpen) {
+              games.push({
+                id: i,
+                creator: player1,
+                stake: (parseInt(stakeHex, 16) / 1e18).toFixed(4),
+                isOpen: true
+              });
+            }
+          }
         } catch (error) {
           console.error(`Error fetching game ${i}:`, error);
         }
       }
 
-      setOpenGames(games.filter(g => g.isOpen));
+      setOpenGames(games);
     };
 
     fetchOpenGames();
-  }, [gameCount, contractAddress]);
+
+    // Refresh every 5 seconds
+    const interval = setInterval(() => {
+      refetchGameCount();
+      fetchOpenGames();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [gameCount, contractAddress, refetchGameCount]);
 
   const handleJoinGame = async (gameId, stake) => {
     try {
-      const commitment = keccak256(toUtf8Bytes(`${move}:${secret}`));
+      // Generate commitment (keccak256 returns bytes32, contract expects uint256)
+      const commitmentHash = keccak256(toUtf8Bytes(`${move}:${secret}`));
+      const commitment = toBigInt(commitmentHash); // Convert bytes32 to uint256
 
       setStatus('Joining game...');
       setSelectedGame(gameId);

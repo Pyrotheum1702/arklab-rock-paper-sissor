@@ -9,10 +9,20 @@ async function main() {
   const balance = await hre.ethers.provider.getBalance(deployer.address);
   console.log("Account balance:", hre.ethers.formatEther(balance), "ETH");
 
+  // Check balance before deployment
+  const minBalance = hre.ethers.parseEther("0.002");
+  if (balance < minBalance) {
+    throw new Error(`Insufficient balance. Need at least 0.002 ETH for deployment. Current: ${hre.ethers.formatEther(balance)} ETH`);
+  }
+
+  // Get current nonce
+  const currentNonce = await hre.ethers.provider.getTransactionCount(deployer.address, "latest");
+  console.log("Current nonce:", currentNonce);
+
   // Deploy MockVerifier first
   console.log("\nDeploying MockVerifier...");
   const MockVerifier = await hre.ethers.getContractFactory("MockVerifier");
-  const verifier = await MockVerifier.deploy();
+  const verifier = await MockVerifier.deploy({ nonce: currentNonce });
   await verifier.waitForDeployment();
   const verifierAddress = await verifier.getAddress();
   console.log("MockVerifier deployed to:", verifierAddress);
@@ -20,7 +30,7 @@ async function main() {
   // Deploy RockPaperScissorsZK with verifier address
   console.log("\nDeploying RockPaperScissorsZK...");
   const RockPaperScissorsZK = await hre.ethers.getContractFactory("RockPaperScissorsZK");
-  const rpsZK = await RockPaperScissorsZK.deploy(verifierAddress);
+  const rpsZK = await RockPaperScissorsZK.deploy(verifierAddress, { nonce: currentNonce + 1 });
   await rpsZK.waitForDeployment();
   const rpsZKAddress = await rpsZK.getAddress();
   console.log("RockPaperScissorsZK deployed to:", rpsZKAddress);
