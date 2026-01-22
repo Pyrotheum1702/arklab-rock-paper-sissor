@@ -2,7 +2,7 @@
 
 This document compares the two approaches for Rock Paper Scissors.
 
-## 📋 Quick Comparison
+## Quick Comparison
 
 | Aspect | Commit-Reveal | Zero-Knowledge |
 |--------|---------------|----------------|
@@ -16,7 +16,7 @@ This document compares the two approaches for Rock Paper Scissors.
 | **Proof size** | N/A | 128 bytes |
 | **Learning curve** | Easy | Advanced |
 
-## 🔄 Flow Comparison
+## Flow Comparison
 
 ### Commit-Reveal Flow
 
@@ -71,7 +71,7 @@ Total: 3 on-chain transactions
 - Moves never revealed = perfect privacy
 - Single atomic operation for winner determination
 
-## 💰 Cost Analysis
+## Cost Analysis
 
 ### Commit-Reveal
 
@@ -113,48 +113,48 @@ Yes, for this simple game! But consider:
    - With ZK rollups: ZK becomes 100x cheaper
    - With proof aggregation: ZK becomes cheaper at scale
 
-## 🎯 When to Use Each
+## When to Use Each
 
 ### Use Commit-Reveal When:
 
-✅ **Gas optimization is critical**
+**Gas optimization is critical**
 - You're deploying on expensive L1
 - Users are price-sensitive
 - Game frequency is low
 
-✅ **Simplicity is key**
+**Simplicity is key**
 - You're learning blockchain development
 - Team doesn't have ZK expertise
 - Time to market is crucial
 
-✅ **Privacy is not critical**
+**Privacy is not critical**
 - Revealing moves post-game is acceptable
 - Historical data can be public
 - Focus is on fairness, not privacy
 
 ### Use Zero-Knowledge When:
 
-✅ **Privacy matters**
+**Privacy matters**
 - Moves should never be revealed
 - Prevent strategy analysis
 - Competitive gaming scenarios
 
-✅ **UX is critical**
+**UX is critical**
 - Fewer transactions = better experience
 - Mobile gaming scenarios
 - High-frequency gameplay
 
-✅ **Scaling is needed**
+**Scaling is needed**
 - 100s-1000s of games
 - Using ZK rollups (StarkNet, zkSync)
 - Proof aggregation available
 
-✅ **Griefing prevention**
+**Griefing prevention**
 - Competitive tournaments
 - High-stakes gaming
 - Reputation systems
 
-## 🔒 Security Comparison
+## Security Comparison
 
 ### Commit-Reveal Security
 
@@ -195,7 +195,7 @@ Yes, for this simple game! But consider:
 2. **Circuit bugs** → Under-constrained circuits (mitigated by formal verification)
 3. **Implementation bugs** → Solidity verifier issues (mitigated by standard libraries)
 
-## 🧪 Testing Comparison
+## Testing Comparison
 
 ### Commit-Reveal Testing
 
@@ -225,7 +225,7 @@ Yes, for this simple game! But consider:
 **Test count:** ~40+ tests
 **Coverage:** Circuit coverage is critical
 
-## 🎓 Learning Path
+## Learning Path
 
 ### For Beginners
 
@@ -251,7 +251,7 @@ Optimize **Zero-Knowledge**:
 3. ZK rollup integration
 4. Custom circuits
 
-## 📊 Real-World Examples
+## Real-World Examples
 
 ### Commit-Reveal in Production
 
@@ -278,7 +278,7 @@ Optimize **Zero-Knowledge**:
 - True privacy guarantees
 - Future of Ethereum
 
-## 🚀 Future Trends
+## Future Trends
 
 ### Commit-Reveal
 
@@ -295,7 +295,7 @@ Optimize **Zero-Knowledge**:
 
 **Prediction:** By 2025-2026, ZK will be the default for most onchain games on L2s.
 
-## 🎯 Recommendations
+## Recommendations
 
 ### For This Project (Learning)
 
@@ -325,7 +325,7 @@ Optimize **Zero-Knowledge**:
 - Get security audits
 - Plan for formal verification
 
-## 📖 Further Reading
+## Further Reading
 
 ### Commit-Reveal
 - [OpenZeppelin Commit-Reveal](https://docs.openzeppelin.com/contracts/4.x/api/utils#Commit)

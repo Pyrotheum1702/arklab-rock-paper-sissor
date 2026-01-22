@@ -320,4 +320,4 @@ Optional enhancements:
 - Visit [Base Discord](https://discord.gg/buildonbase) for community support
 - Review contract on [Basescan](https://basescan.org) to debug issues
 
-Happy deploying! 🎮⛓️
+Happy deploying!

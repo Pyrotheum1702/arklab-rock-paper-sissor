@@ -20,7 +20,7 @@ npm run compile
 npm test
 ```
 
-You should see all 25 tests passing ✅
+You should see all 25 tests passing.
 
 ## Try the Demo
 
@@ -194,4 +194,4 @@ If you get stuck:
 3. Use `console.log` in the scripts for debugging
 4. Ask questions in Web3 developer communities
 
-Happy coding! 🎮⛓️
+Happy coding!

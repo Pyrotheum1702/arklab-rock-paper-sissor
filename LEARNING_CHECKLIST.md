@@ -164,4 +164,4 @@ Once you've checked most boxes above:
 
 ---
 
-Track your progress and revisit this checklist as you learn. Good luck! 🚀
+Track your progress and revisit this checklist as you learn. Good luck!

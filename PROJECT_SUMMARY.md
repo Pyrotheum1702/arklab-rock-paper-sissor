@@ -133,10 +133,10 @@ WaitingForPlayer2 → CommitPhase → RevealPhase → Completed
 
 5. **Reveal Phase** (5-minute deadline starts):
    - Alice reveals: "Rock" + "abc123"
-   - Contract checks: `hash(Rock + "abc123")` = `0xaaa...` ✅
+   - Contract checks: `hash(Rock + "abc123")` = `0xaaa...` ✓
 
    - Bob reveals: "Paper" + "xyz789"
-   - Contract checks: `hash(Paper + "xyz789")` = `0xbbb...` ✅
+   - Contract checks: `hash(Paper + "xyz789")` = `0xbbb...` ✓
 
 6. **Winner Determination**:
    - Contract applies rules: Paper beats Rock
@@ -208,12 +208,12 @@ If Bob never revealed, Alice could claim victory after 5 minutes.
 
 ## Key Takeaways
 
-✅ You built a complete onchain game from scratch
-✅ You understand the commit-reveal pattern
-✅ You learned smart contract security best practices
-✅ You wrote comprehensive tests
-✅ You deployed and tested successfully
-✅ You have a solid foundation for building more complex games
+- You built a complete onchain game from scratch
+- You understand the commit-reveal pattern
+- You learned smart contract security best practices
+- You wrote comprehensive tests
+- You deployed and tested successfully
+- You have a solid foundation for building more complex games
 
 ## Next Learning Steps
 
@@ -233,4 +233,4 @@ If Bob never revealed, Alice could claim victory after 5 minutes.
 
 ---
 
-**Congratulations!** You've completed a production-quality onchain game. This is a significant achievement in blockchain development. Keep building! 🎮⛓️🚀
+**Congratulations!** You've completed a production-quality onchain game. This is a significant achievement in blockchain development. Keep building!

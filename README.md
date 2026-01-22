@@ -2,9 +2,9 @@
 
 A fully decentralized Rock Paper Scissors game built with Solidity and Hardhat. This project demonstrates key blockchain gaming concepts including commit-reveal schemes, game state management, and fair play enforcement.
 
-**🚀 New: Deploy to Base for ultra-low costs!** Only $0.01 per game (99.95% cheaper than Ethereum). See [BASE_DEPLOYMENT.md](BASE_DEPLOYMENT.md) for details.
+**New: Deploy to Base for ultra-low costs!** Only $0.01 per game (99.95% cheaper than Ethereum). See [BASE_DEPLOYMENT.md](BASE_DEPLOYMENT.md) for details.
 
-## 🎮 Game Overview
+## Game Overview
 
 Two players challenge each other to Rock Paper Scissors with ETH stakes. The winner takes the entire pot (2x stake), or in case of a draw, both players get their stake back.
 
@@ -16,7 +16,7 @@ Two players challenge each other to Rock Paper Scissors with ETH stakes. The win
 - **ETH Stakes**: Real money on the line makes it interesting
 - **Fully Decentralized**: No backend needed, all logic runs on-chain
 
-## 🔐 How the Commit-Reveal Works
+## How the Commit-Reveal Works
 
 Since blockchain is transparent, we can't just submit moves directly (Player 2 would see Player 1's move and always win). Instead:
 
@@ -29,7 +29,7 @@ This ensures neither player can cheat by:
 - Seeing the opponent's move first (it's encrypted during commit)
 - Changing their move after committing (reveal must match commitment)
 
-## 📋 Game Flow
+## Game Flow
 
 ```
 1. Player1 creates game with 1 ETH stake, challenges Player2
@@ -45,14 +45,14 @@ This ensures neither player can cheat by:
    - Draw = both get 1 ETH refund
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Solidity ^0.8.20**: Smart contract language
 - **Hardhat**: Development environment
 - **Ethers.js v6**: Blockchain interaction library
 - **Chai**: Testing framework
 
-## 📦 Installation
+## Installation
 
 ```bash
 # Clone or navigate to the project
@@ -62,7 +62,7 @@ cd rps-onchain-game
 npm install
 ```
 
-## 🧪 Testing
+## Testing
 
 Run the comprehensive test suite:
 
@@ -96,7 +96,7 @@ Example test output:
       ✔ Should allow timeout claim after deadline
 ```
 
-## 🚀 Deployment
+## Deployment
 
 ### Local Development
 
@@ -126,13 +126,13 @@ npm run deploy:sepolia
 
 ### Mainnet
 
-**⚠️ Warning**: Make sure you've thoroughly tested on testnet first!
+**Warning**: Make sure you've thoroughly tested on testnet first!
 
 ```bash
 npm run deploy:mainnet
 ```
 
-## 🎯 How to Play (Using Scripts)
+## How to Play (Using Scripts)
 
 ### Quick Demo
 
@@ -189,7 +189,7 @@ const game = await rps.getGame(0);
 console.log("Winner:", game.winner);
 ```
 
-## 📖 Contract API
+## Contract API
 
 ### Main Functions
 
@@ -224,7 +224,7 @@ console.log("Winner:", game.winner);
 #### `getGame(uint256 _gameId) → (player1, player2, stake, state, move1, move2, winner)`
 - View function to get game details
 
-## 🎓 Learning Points
+## Learning Points
 
 This project teaches:
 
@@ -236,14 +236,14 @@ This project teaches:
 6. **Gas Optimization**: Efficient storage and computation
 7. **Testing**: Comprehensive test coverage for smart contracts
 
-## 🔒 Security Considerations
+## Security Considerations
 
-- ✅ **Commit-Reveal**: Prevents front-running and cheating
-- ✅ **Timeout Protection**: Prevents games from hanging forever
-- ✅ **Access Control**: Only authorized players can make moves
-- ✅ **Reentrancy Protection**: Uses checks-effects-interactions pattern
-- ✅ **Input Validation**: All inputs are validated
-- ✅ **No Randomness Issues**: No need for VRF, players control their moves
+- **Commit-Reveal**: Prevents front-running and cheating
+- **Timeout Protection**: Prevents games from hanging forever
+- **Access Control**: Only authorized players can make moves
+- **Reentrancy Protection**: Uses checks-effects-interactions pattern
+- **Input Validation**: All inputs are validated
+- **No Randomness Issues**: No need for VRF, players control their moves
 
 **Note**: This is a learning project. For production, consider:
 - Professional security audit
@@ -251,7 +251,7 @@ This project teaches:
 - More sophisticated timeout handling
 - Gas optimization for L1 deployment
 
-## 📊 Gas Estimates
+## Gas Estimates
 
 Approximate gas costs (will vary):
 - Create game: ~100,000 gas
@@ -259,18 +259,18 @@ Approximate gas costs (will vary):
 - Commit move: ~50,000 gas
 - Reveal move: ~60,000-150,000 gas (includes winner determination)
 
-## 🤝 Contributing
+## Contributing
 
 This is a learning project, but feel free to:
 - Open issues for bugs or questions
 - Suggest improvements
 - Fork and experiment
 
-## 📄 License
+## License
 
 ISC
 
-## 🎉 Next Steps
+## Next Steps
 
 To extend this project, consider:
 
@@ -283,7 +283,7 @@ To extend this project, consider:
 7. **L2 Deployment**: Deploy on Arbitrum/Optimism for lower gas
 8. **ERC20 Stakes**: Allow betting with custom tokens
 
-## 📚 Resources
+## Resources
 
 - [Solidity Docs](https://docs.soliditylang.org/)
 - [Hardhat Docs](https://hardhat.org/docs)
@@ -293,4 +293,4 @@ To extend this project, consider:
 
 ---
 
-Happy Learning! 🚀 Feel free to reach out with questions or share what you build!
+Happy Learning! Feel free to reach out with questions or share what you build!
